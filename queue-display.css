@@ -1,0 +1,119 @@
+body {
+  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#queue-display {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+header {
+  background-color: #6a11cb;
+  background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+#current-performer {
+  border-left: 5px solid #2575fc;
+}
+
+#now-singing {
+  min-height: 100px;
+}
+
+.queue-position {
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.table-number {
+  background-color: #6c757d;
+  color: white;
+  font-weight: bold;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.bid-badge {
+  font-weight: bold;
+  background-color: #ffc107;
+  color: #000;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* Bid animation */
+#bid-animation {
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bid-notification {
+  background-color: #ffc107;
+  color: #000;
+  padding: 30px 50px;
+  border-radius: 15px;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+  animation: pulse 1.5s infinite;
+}
+
+.bid-amount {
+  font-size: 5rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.bid-message {
+  font-size: 2rem;
+  margin: 15px 0;
+}
+
+.table-info {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Highlight rows with bids */
+.bid-row {
+  background-color: rgba(255, 193, 7, 0.2) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-header h3 {
+    font-size: 1.2rem;
+  }
+  
+  th, td {
+    font-size: 0.9rem;
+  }
+}

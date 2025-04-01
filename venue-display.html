@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sipsing Venue Layout</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    .venue-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .venue-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .venue-layout-grid {
+      display: grid;
+      gap: 10px;
+      margin: 0 auto;
+      max-width: 1200px;
+      flex-grow: 1;
+    }
+
+    .venue-cell {
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .venue-cell-table {
+      background-color: #2c3e50;
+      border: 2px solid #3498db;
+    }
+
+    .venue-cell-bar {
+      background-color: #2c3e50;
+      border: 2px solid #e67e22;
+    }
+
+    .venue-cell-stage {
+      background-color: #e74c3c;
+      border: 2px solid #f39c12;
+    }
+
+    .venue-cell-wall {
+      background-color: #7f8c8d;
+      border: none;
+    }
+
+    .venue-cell-empty {
+      background-color: rgba(52, 73, 94, 0.2);
+      border: 1px dashed #7f8c8d;
+    }
+
+    .venue-cell.occupied {
+      border-color: #2ecc71;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+    }
+
+    .venue-cell.current-singing {
+      animation: pulseSinging 1.5s infinite;
+      border-color: #f1c40f;
+      box-shadow: 0 0 20px rgba(241, 196, 15, 0.8);
+    }
+
+    .cell-icon {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .cell-label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .cell-occupant {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .room-selector {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .room-selector button {
+      margin: 0 5px;
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-weight: bold;
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 8px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-color {
+      width: 15px;
+      height: 15px;
+      border-radius: 3px;
+    }
+
+    .info-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .current-song {
+      background-color: rgba(231, 76, 60, 0.3);
+      padding: 10px;
+      border-radius: 5px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .microphone-marker {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #f1c40f;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes pulseSinging {
+      0% { box-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
+      50% { box-shadow: 0 0 30px rgba(241, 196, 15, 1); }
+      100% { box-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-5px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="venue-container">
+    <header class="venue-header">
+      <h1 id="venue-name">Sipsing Karaoke</h1>
+      <div id="room-selector" class="room-selector">
+        <!-- Room buttons will be added here -->
+      </div>
+    </header>
+    
+    <div id="venue-layout-grid" class="venue-layout-grid">
+      <!-- Grid will be populated by JavaScript -->
+    </div>
+    
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #3498db;"></div>
+        <span>Table</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #e67e22;"></div>
+        <span>Bar</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #e74c3c;"></div>
+        <span>Stage</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #f1c40f;"></div>
+        <span>Currently Singing</span>
+      </div>
+    </div>
+    
+    <div class="info-panel">
+      <div class="current-song">
+        <h5><i class="fas fa-music"></i> Now Singing</h5>
+        <div id="current-singing-info">
+          <p class="mb-1">No one is currently singing</p>
+        </div>
+      </div>
+      
+      <div>
+        <h5><i class="fas fa-info-circle"></i> Microphone Location</h5>
+        <p class="small">Look for the bouncing microphone icon <i class="fas fa-microphone-alt text-warning"></i> on the stage.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap and its dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Firebase -->
+  <script type="module" src="../firebase.js"></script>
+  
+  <!-- Venue display JavaScript -->
+  <script type="module">
+    import { 
+      db, 
+      auth
+    } from '../firebase.js';
+
+    import { 
+      getFirestore,
+      doc, 
+      getDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get venue ID from URL params
+      const urlParams = new URLSearchParams(window.location.search);
+      const venueId = urlParams.get('venue');
+      
+      if (!venueId) {
+        showError("No venue specified");
+        return;
+      }
+
+      // Initialize realtime listener for venue updates
+      initializeVenueListener(venueId);
+    });
+
+    // Initialize venue listener
+    function initializeVenueListener(venueId) {
+      try {
+        // Reference to the venue document
+        const venueRef = doc(db, "venues", venueId);
+        
+        // Subscribe to realtime updates
+        onSnapshot(venueRef, (doc) => {
+          if (doc.exists()) {
+            const venueData = doc.data();
+            
+            // Update venue name
+            document.getElementById('venue-name').textContent = venueData.venueName;
+            
+            // Update venue layout
+            updateVenueLayout(venueData);
+            
+            // Update current singing info
+            updateCurrentSingingInfo(venueData.currentSinging, venueData.spots);
+          } else {
+            showError("Venue not found");
+          }
+        }, (error) => {
+          console.error("Error getting venue updates:", error);
+          showError("Error getting updates");
+        });
+      } catch (error) {
+        console.error("Error setting up listener:", error);
+        showError("Error connecting to database");
+      }
+    }
+
+    // Update venue layout
+    function updateVenueLayout(venueData) {
+      if (!venueData.venueLayout || !venueData.venueLayout.isCustomized) {
+        showError("Venue layout not configured");
+        return;
+      }
+      
+      const venueLayout = venueData.venueLayout;
+      const gridWidth = venueLayout.width;
+      const gridHeight = venueLayout.height;
+      const gridCells = venueLayout.gridCells;
+      const rooms = venueLayout.rooms;
+      const activeRoom = venueLayout.activeRoom;
+      const spots = venueData.spots;
+      const currentSinging = venueData.currentSinging;
+      
+      // Update room selector
+      const roomSelector = document.getElementById('room-selector');
+      roomSelector.innerHTML = rooms.map(room => `
+        <button class="btn ${room === activeRoom ? 'btn-primary' : 'btn-outline-light'}" 
+                onclick="switchRoom('${room}')">
+          ${room}
+        </button>
+      `).join('');
+      
+      // Update layout grid
+      const layoutGrid = document.getElementById('venue-layout-grid');
+      layoutGrid.style.gridTemplateColumns = `repeat(${gridWidth}, 1fr)`;
+      layoutGrid.style.gridTemplateRows = `repeat(${gridHeight}, 1fr)`;
+      
+      let gridHTML = '';
+      
+      for (let y = 0; y < gridHeight; y++) {
+        for (let x = 0; x < gridWidth; x++) {
+          const cellId = `${x}-${y}`;
+          const cell = gridCells[cellId] || { type: 'empty' };
+          const cellTypeClass = cell.type;
+          
+          // Determine if this spot is occupied or currently singing
+          let isOccupied = false;
+          let isCurrentlySinging = false;
+          
+          if ((cell.type === 'table' || cell.type === 'bar') && cell.spotId) {
+            if (spots[cell.spotId]?.occupant) {
+              isOccupied = true;
+            }
+            
+            if (currentSinging && currentSinging.spotId === cell.spotId) {
+              isCurrentlySinging = true;
+            }
+          }
+          
+          // Build cell content
+          let cellContent = '';
+          
+          switch(cell.type) {
+            case 'table':
+              cellContent = `
+                <div class="cell-icon"><i class="fas fa-chair"></i></div>
+                <div class="cell-label">${cell.spotId ? `Table ${cell.spotId.split('_')[1]}` : 'Table'}</div>
+                ${isOccupied ? `<div class="cell-occupant">${spots[cell.spotId].occupant}</div>` : ''}
+              `;
+              break;
+              
+            case 'bar':
+              cellContent = `
+                <div class="cell-icon"><i class="fas fa-glass-martini-alt"></i></div>
+                <div class="cell-label">${cell.spotId ? `Bar #${cell.spotId.split('_')[1]}` : 'Bar'}</div>
+                ${isOccupied ? `<div class="cell-occupant">${spots[cell.spotId].occupant}</div>` : ''}
+              `;
+              break;
+              
+            case 'stage':
+              cellContent = `
+                <div class="cell-icon"><i class="fas fa-microphone-alt"></i></div>
+                <div class="cell-label">${cell.name || 'Stage'}</div>
+                ${isCurrentlySinging ? `<div class="microphone-marker"><i class="fas fa-microphone-alt"></i></div>` : ''}
+              `;
+              break;
+              
+            case 'wall':
+              cellContent = `<div class="cell-icon"><i class="fas fa-grip-lines${cell.direction === 'vertical' ? '-vertical' : ''}"></i></div>`;
+              break;
+              
+            default:
+              cellContent = '';
+          }
+          
+          gridHTML += `
+            <div class="venue-cell venue-cell-${cellTypeClass} ${isOccupied ? 'occupied' : ''} ${isCurrentlySinging ? 'current-singing' : ''}">
+              ${cellContent}
+            </div>
+          `;
+        }
+      }
+      
+      layoutGrid.innerHTML = gridHTML;
+    }
+
+    // Update current singing info
+    function updateCurrentSingingInfo(currentSinging, spots) {
+      const currentSingingInfo = document.getElementById('current-singing-info');
+      
+      if (!currentSinging) {
+        currentSingingInfo.innerHTML = `<p class="mb-1">No one is currently singing</p>`;
+        return;
+      }
+      
+      const spotName = spots[currentSinging.spotId]?.name || 'Unknown';
+      const performer = spots[currentSinging.spotId]?.occupant || 'Unknown';
+      
+      currentSingingInfo.innerHTML = `
+        <p class="mb-1"><strong>${currentSinging.songName}</strong></p>
+        <p class="mb-0 small">Performer: ${performer}</p>
+        <p class="mb-0 small">From: ${spotName}</p>
+      `;
+    }
+
+    // Show error message
+    function showError(message) {
+      const venueContainer = document.querySelector('.venue-container');
+      venueContainer.innerHTML = `
+        <div class="alert alert-danger mx-auto mt-5" style="max-width: 500px">
+          <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Error</h4>
+          <p>${message}</p>
+          <hr>
+          <p class="mb-0">Please check the URL or contact the venue staff.</p>
+        </div>
+      `;
+    }
+
+    // Define switchRoom function globally
+    window.switchRoom = function(roomName) {
+      // Get venue ID from URL params
+      const urlParams = new URLSearchParams(window.location.search);
+      const venueId = urlParams.get('venue');
+      
+      if (!venueId) return;
+      
+      // Update active room in Firestore
+      const venueRef = doc(db, "venues", venueId);
+      getDoc(venueRef)
+        .then((doc) => {
+          if (doc.exists()) {
+            const venueData = doc.data();
+            if (venueData.venueLayout) {
+              venueData.venueLayout.activeRoom = roomName;
+              
+              // Update Firestore
+              updateDoc(venueRef, { venueLayout: venueData.venueLayout });
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error switching room:", error);
+        });
+    };
+  </script>
+</body>
+</html>
